@@ -1,53 +1,62 @@
 import styles from './CreatePost.module.css'
 
 import { useState } from 'react'
+
+// Navegação entre páginas
 import { navigate, useNavigate } from 'react-router-dom'
+
+// Hook personalizado que fornece os dados do usuário logado
 import { useAuthValue } from '../../context/AuthContext'
+
+// Hook personalizado para inserir documentos no Firestore
 import { useInsertDocument } from '../../hooks/useInsertDocument'
 
 
 const CreatePost = () => {
+  // Estados para controlar os valores dos campos do formulário
   const [title, setTitle] = useState("")
   const [image, setImage] = useState("")
   const [body, setBody] = useState("")
   const [tags, setTags] = useState([])
-  const [formError, setFormError] = useState("")
+  const [formError, setFormError] = useState("") // Estado para erros de validação
 
-  const {user} = useAuthValue()
+  const {user} = useAuthValue(); // Obtém o usuário logado via contexto
 
   const { insertDocument, response } = useInsertDocument("posts")
+  // Hook que insere um documento na coleção "posts" do Firestore
+  // `response` contém o estado da operação (loading, error)
 
-  const navigate = useNavigate()
+  const navigate = useNavigate(); // Permite redirecionar programaticamente para outra página
 
+  // Função que lida com o envio do formulário
   const handleSubmite = (e) => {
     e.preventDefault();
     setFormError("")
 
   // validade image URL
-
   try {
-    new URL(image)
+    new URL(image) // Tenta construir uma URL com a string
   } catch (error) {
     setFormError("A imagem precisa ser uma URL")
+    return // Impede o envio se for inválida
   }
 
-  //criar o array de tags
-
+  // Cria um array de tags a partir da string, separando por vírgulas
   const tagsArray = tags.split(",").map((tag) => tag.trim().toLowerCase())
 
-  //checar todos os valores 
-
+  // Verifica se todos os campos foram preenchidos
   if(!title || !image || !tags || !body){
     setFormError("Por favor, preencha todos os campos!")
   }
 
+  // Chama o hook para inserir o post no Firestore
   insertDocument({
     title,
     image,
     body,
     tagsArray,
-    uid: user.uid,
-    createBy: user.displayName,
+    uid: user.uid, // ID do usuário logado
+    createBy: user.displayName, // Nome do usuário logado
   })
 
   // redirect to home page
@@ -59,7 +68,9 @@ const CreatePost = () => {
     <div className={styles.create_post}>
       <h2>Criar post</h2>
       <p>Escreva sobre o que quiser e compartilhe o seu conhecimento!</p>
+
       <form onSubmit={handleSubmite}>
+         {/* Campo do título */}
         <label>
           <span>Titulo:</span>
           <input 
@@ -71,6 +82,8 @@ const CreatePost = () => {
             value={title}
           />
         </label>
+
+        {/* Campo da imagem */}
         <label>
           <span>URL da imagem:</span>
           <input 
@@ -82,6 +95,8 @@ const CreatePost = () => {
             value={image}
           />
         </label>
+
+        {/* Campo do conteúdo */}
         <label>
           <span>Conteúdo:</span>
           <textarea 
@@ -92,6 +107,8 @@ const CreatePost = () => {
           value={body}
           ></textarea>
         </label>
+
+        {/* Campo das tags */}
         <label>
           <span>Tags:</span>
           <input 
@@ -103,12 +120,16 @@ const CreatePost = () => {
             value={tags}
           />
         </label>
+
+        {/* Botões: mostra "Cadastrar" ou "Aguarde..." dependendo do estado do request */}
         {!response.loading && <button className='btn'>Cadastrar</button>}
           {response.loading && (
             <button className='btn'>
             Aguarde...
           </button>
           )} 
+          
+          {/* Exibição de erros */}
           {response.error && <p className='error'>{response.error}</p>}
           {formError && <p className='error'>{formError}</p>}
       </form>

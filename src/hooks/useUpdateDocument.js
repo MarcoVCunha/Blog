@@ -1,6 +1,6 @@
 import { useState, useEffect, useReducer } from "react";
 import {db} from '../Firebase/config'
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 
 // Estado inicial do reducer: não está carregando nem com erro
 const initialState = {
@@ -9,12 +9,12 @@ const initialState = {
 }
 
 // Reducer para gerenciar os estados da inserção (loading, sucesso, erro)
-const insertReducer = (state, action) => {
+const updateReducer = (state, action) => {
     switch(action.type) {
         case "LOADING":
             // Define estado para carregando e sem erro
             return {loading: true, error: null}
-        case "iNSERTED_DOC": 
+        case "UPDATED_DOC": 
             // Estado para inserção concluída com sucesso, sem erro
             return {loading: false, error: null}
         case "ERROR":
@@ -27,10 +27,10 @@ const insertReducer = (state, action) => {
 }
 
 // Hook customizado para inserir documento em uma coleção do Firestore
-export const useInsertDocument = (docCollection) => {
+export const useUpdateDocument = (docCollection) => {
 
     // useReducer para controlar o estado da operação de inserção
-    const [response, dispatch] = useReducer(insertReducer, initialState)
+    const [response, dispatch] = useReducer(updateReducer, initialState)
 
     // Estado para controlar se o componente foi desmontado, prevenindo vazamento de memória
     const [cancelled, setCancelled] = useState(false)
@@ -43,27 +43,23 @@ export const useInsertDocument = (docCollection) => {
     }
 
     // Função assíncrona para inserir documento no Firestore
-    const insertDocument = async(document) =>{
+    const updateDocument = async(id, data) =>{
         // Dispara ação para setar loading true antes da operação
         checkCancelBeforeDispatch({
             type: "LOADING",
-        })
+        });
     
 
         try {
-            // Cria novo documento adicionando timestamp de criação
-            const newDocument = {...document, createdAt: Timestamp.now()}
 
-            // Adiciona documento na coleção passada como parâmetro
-            const InsertedDocument = await addDoc(
-                collection(db, docCollection),
-                newDocument
-            );
+            const docRef = await doc(db, docCollection, id);
 
+            const updatedDocument = await updateDoc(docRef, data);
+            
             // Dispara ação de sucesso informando que inserção foi concluída
             checkCancelBeforeDispatch({
-                type: "INSERTED_DOC",
-                payload: InsertedDocument,
+                type: "UPDATED_DOC",
+                payload: updatedDocument,
             });
 
         } catch (error) {
@@ -82,6 +78,6 @@ export const useInsertDocument = (docCollection) => {
     }, []);
 
     // Retorna a função para inserir documento e o estado da operação
-    return {insertDocument, response}
+    return {updateDocument, response}
     }
 

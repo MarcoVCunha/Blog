@@ -1,5 +1,7 @@
+// Importa as configurações do Firebase (app e banco de dados)
 import{app, db} from '../Firebase/config'
 
+// Importa funções do Firebase Auth para autenticação
 import{
     getAuth,
     createUserWithEmailAndPassword,
@@ -10,16 +12,18 @@ import{
 
 import { useState, useEffect} from 'react'
 
+// Hook personalizado que encapsula toda a lógica de autenticação
 export const useAuthentication = () => {
-    const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(null)
+    const [error, setError] = useState(null)     // Armazena mensagens de erro
+    const [loading, setLoading] = useState(null) // Indica se está carregando alguma operação (ex: login)
     
     // cleanup
     // deal with memory leak
-    const [cancelled, setCancelled] = useState(false)
+    const [cancelled, setCancelled] = useState(false) // Controle para evitar que operações assíncronas sejam executadas após desmontar o componente (evita memory leak)
 
-    const auth = getAuth()
+    const auth = getAuth() // Obtém a instância de autenticação do Firebase
 
+    // Função que impede execução de código se o componente já foi desmontado
     function checkIfCancelled() {
         if(cancelled) {
             return;
@@ -34,28 +38,31 @@ export const useAuthentication = () => {
         setError(null)
 
         try {
-
+            // Cria o usuário com e-mail e senha
             const {user} = await createUserWithEmailAndPassword (
                 auth,
                 data.email,
                 data.password
             )
 
+            // Atualiza o nome do usuário (displayName)
             await updateProfile(user, {
                 displayName: data.displayName
             })
 
             setLoading(false);
 
+            // Retorna o usuário criado
             return user
             
         } catch (error) {
             
-            console.log(error.message)
+            console.log(error.message) // Log para debug
             console.log(typeof error.message);
 
             let systemErrorMessage
 
+            // Verifica o tipo de erro retornado e traduz para o usuário
             if(error.message.includes("Password")){
                 systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres."
             } else if(error.message.includes("auth/email-already-in-use")){
@@ -92,7 +99,9 @@ const login = async(data) => {
 
     try {
         
-        await signInWithEmailAndPassword(auth, 
+        // Autentica o usuário com e-mail e senha
+        await signInWithEmailAndPassword(   
+            auth, 
             data.email, 
             data.password)
         
@@ -102,6 +111,7 @@ const login = async(data) => {
 
         let systemErrorMessage;
 
+        // Verifica o tipo de erro e trata mensagens para o usuário
         if (error.message.includes("Password")) {
             systemErrorMessage = "Usuário não encontrado."
         } else if(error.message.includes("wrong-password")) {
@@ -116,10 +126,12 @@ const login = async(data) => {
     }
 }
 
+    // useEffect é executado uma vez ao montar o componente e garante que o hook saiba quando ele for desmontado
     useEffect(() => {
         return () => setCancelled(true);
     }, [])
 
+    // Retorna os métodos e variáveis que outros componentes vão usar
     return{
         auth, 
         createUser,

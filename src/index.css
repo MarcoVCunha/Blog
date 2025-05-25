@@ -87,16 +87,17 @@ textarea{
   padding: 7px 30px;
 }
 
+
 .btn:hover{
   background-color: #0F730C;
   color: var(--white-color);
 }
 
-.btn.btn-outline{
+.btn.btn-outline:hover{
   background-color: var(--black-color);
 }
 
-.btn.btn.danger:hover{
+.btn.btn-danger:hover{
   background-color: #DC3545;
 }
 
@@ -111,3 +112,16 @@ button[disabled] {
   padding: 5px;
   border-radius: 5px;
 }
+
+.noposts{
+    text-align: center;
+}
+
+.noposts p{
+    margin-bottom: 1.5em;
+}
+
+.noposts a{
+    padding: 10px 25px;
+}
+
