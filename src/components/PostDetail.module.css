@@ -1,36 +1,79 @@
-.post_detail{
+.post_detail {
     margin-bottom: 2em;
     text-align: center;
+    padding: 0 1em; /* Garante um respiro lateral em telas pequenas */
+    max-width: 600px; 
 
 }
 
-.post_detail img{
-    max-width: 600px;
+.post_detail img {
+    width: 100%;    /* Mas não ultrapassa 600px */
+    height: 400px;        /* Altura proporcional */
+    object-fit: cover;
+    border-radius: 8px;
 }
 
-.post_detail h2{
+.post_detail h2 {
     margin-bottom: .4em;
+    font-size: 1.5rem;
 }
 
-.post_detail .tags{
+.post_tags{
+    max-width: 400px;
+    margin: 0 auto; 
+    padding: 0.5em;
+}
+
+.post_detail .tags {
     margin-bottom: 1.2em;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;       /* Permite que as tags quebrem linha */
     font-size: 0.9em;
 }
 
-.tags p{
-    margin-right: .5em;
-    
+.tags p {
+    margin: 0.3em 0.5em;
 }
 
-.tags span{
+.tags span {
     font-weight: bold;
 }
 
-.createdby {
+.createby {
     font-style: italic;
     color: #444;
     font-size: 0.8em;
     margin-bottom: 1em;
+    display: block;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .post_detail h2 {
+        font-size: 1.2rem;
+    }
+
+    .post_detail .tags {
+        font-size: 0.8em;
+    }
+
+    .createby {
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 480px) {
+    .post_detail h2 {
+        font-size: 1rem;
+    }
+
+    .post_detail .tags {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tags p {
+        margin: 0.2em 0;
+    }
 }

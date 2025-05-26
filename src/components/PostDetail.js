@@ -17,17 +17,22 @@ const PostDetail = ({post}) => {
       <h2>{post.title}</h2>
 
       {/* Nome do autor do post, com estilo aplicado */}
-      <a href=" " className={styles.createdby}>@{post.createBy}</a>
+      <Link to={`/user/${post.uid}`}>
+      <a href=" " className={styles.createby}>
+      @{post.createBy}</a>
+      </Link>
 
       {/* Lista de tags relacionadas ao post */}
-      <div className={styles.tags}>
-            {post.tagsArray.map((tag) => (
-               // Cada tag é exibida com um # na frente. A `key` é obrigatória para listas no React.
-                <p key={tag}>
-                    <span>#</span>
-                    {tag}
-                </p>
-            ))}
+      <div className={styles.post_tags}>
+        <div className={styles.tags}>
+              {post.tagsArray.map((tag) => (
+                 // Cada tag é exibida com um # na frente. A `key` é obrigatória para listas no React.
+                  <p key={tag}>
+                      <span>#</span>
+                      {tag}
+                  </p>
+              ))}
+        </div>
       </div>
 
       {/* Link que leva o usuário à página de detalhes do post */}

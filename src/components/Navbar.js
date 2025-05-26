@@ -9,6 +9,8 @@ import { useAuthValue } from '../context/AuthContext'
 // Importa NavLink do react-router-dom para navegação entre rotas com estilo ativo
 import { NavLink } from 'react-router-dom'
 
+import ThemeToggle from '../hooks/ThemeToggle' // Importa o componente de troca de tema
+
 // Componente funcional Navbar que representa a barra de navegação do app
 const Navbar = () => {
 
@@ -16,6 +18,9 @@ const Navbar = () => {
   const { user } = useAuthValue();
    // Pega a função logout para deslogar o usuário quando chamado
   const { logout } = useAuthentication();
+
+
+
 
   return (
     <div>
@@ -66,9 +71,9 @@ const Navbar = () => {
 
             {/* Se usuário está logado, mostra botão para sair (logout) */}
             {user &&(
-              <li>
-                <button onClick={logout}>Sair</button>
-              </li>
+            <li>
+              <button onClick={logout}>Sair</button>
+            </li>
             )
             }
         </ul>
